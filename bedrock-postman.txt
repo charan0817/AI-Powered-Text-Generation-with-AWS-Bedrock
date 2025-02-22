@@ -1,0 +1,15 @@
+import boto3
+import json
+boto3_bedrock = boto3.client('bedrock-runtime')
+def lambda_handler(event, context):
+    modelId='ai21.j2-ultra-v1'
+    accept = 'application/json'
+    contentType = 'application/json'
+    prompt_data = event.get("prompt")
+    body = json.dumps({"prompt": prompt_data, "maxTokens":100})
+    response1 = boto3_bedrock.invoke_model(body=body, modelId=modelId, accept=accept, contentType=contentType)
+    response_body = json.loads(response1.get('body').read())
+    print(response_body)
+    text = response_body['completions'][0]['data']['text'].replace('\n','')
+
+    return text
